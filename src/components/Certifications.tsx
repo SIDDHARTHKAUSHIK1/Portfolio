@@ -1,3 +1,5 @@
+import { useRef, useState, useEffect } from "react";
+import { MdChevronLeft, MdChevronRight } from "react-icons/md";
 import "./styles/Certifications.css";
 
 const CERTIFICATES = [
@@ -13,9 +15,11 @@ const CERTIFICATES = [
   { id: 10, name: "Full Stack Python Dev", link: "https://drive.google.com/file/d/1HyR94llutAsDQFmzDi8QpjgG_Ef9WcLd/view", image: "https://drive.google.com/thumbnail?id=1HyR94llutAsDQFmzDi8QpjgG_Ef9WcLd&sz=w800" },
   { id: 11, name: "HTML Beginners Udemy", link: "https://drive.google.com/file/d/1smSm1zPqDu81Yyppui82EHIQffteJlD-/view", image: "https://drive.google.com/thumbnail?id=1smSm1zPqDu81Yyppui82EHIQffteJlD-&sz=w800" },
   { id: 12, name: "Intro to Internet of Things", link: "https://drive.google.com/file/d/1KOdrOj4YMxivkYm-D2aQGxWuhY2BXw3f/view", image: "https://drive.google.com/thumbnail?id=1KOdrOj4YMxivkYm-D2aQGxWuhY2BXw3f&sz=w800" },
+  { id: 31, name: "Introduction to Industry 4.0 and Industrial Internet of Things", link: "https://drive.google.com/file/d/1EXdhDHEZkSEbhsmnKTV4YxvyWDGLij0_/view", image: "https://drive.google.com/thumbnail?id=1EXdhDHEZkSEbhsmnKTV4YxvyWDGLij0_&sz=w800" },
   { id: 13, name: "Java Coding Ninja", link: "https://drive.google.com/file/d/1ZQLrG6MonU1BvqcetHUOCpWiN4gMMzCe/view", image: "https://drive.google.com/thumbnail?id=1ZQLrG6MonU1BvqcetHUOCpWiN4gMMzCe&sz=w800" },
   { id: 14, name: "Java Coding Ninja PDF", link: "https://drive.google.com/file/d/14kIkpMcF74QT4mqK9hEq0Js8bvkhH2aJ/view", image: "https://drive.google.com/thumbnail?id=14kIkpMcF74QT4mqK9hEq0Js8bvkhH2aJ&sz=w800" },
   { id: 15, name: "Java Real-World Dev", link: "https://drive.google.com/file/d/1Ip1vzSLuH4NKc4VR7Py90wm7oU_QWVgn/view", image: "https://drive.google.com/thumbnail?id=1Ip1vzSLuH4NKc4VR7Py90wm7oU_QWVgn&sz=w800" },
+  { id: 32, name: "Manufacturing Process Technology I & II", link: "https://drive.google.com/file/d/1MXvzEZr-LOy4sE9hEx0LjicuxsuPTmB7/view", image: "https://drive.google.com/thumbnail?id=1MXvzEZr-LOy4sE9hEx0LjicuxsuPTmB7&sz=w800" },
   { id: 16, name: "Oracle AI Foundations", link: "https://drive.google.com/file/d/11N14dXxIxtsJg7yD2pwvhI7JnAmWJVrR/view", image: "https://drive.google.com/thumbnail?id=11N14dXxIxtsJg7yD2pwvhI7JnAmWJVrR&sz=w800" },
   { id: 17, name: "Oracle Cloud Foundations", link: "https://drive.google.com/file/d/1Y4FkKrWKjnG7SDKAsU4dvdLkKr20RLu6/view", image: "https://drive.google.com/thumbnail?id=1Y4FkKrWKjnG7SDKAsU4dvdLkKr20RLu6&sz=w800" },
   { id: 18, name: "Oracle Cloud Infrastructure", link: "https://drive.google.com/file/d/1U18qrhfzlp62aNpTAzQ3K5-QZPV_8CqQ/view", image: "https://drive.google.com/thumbnail?id=1U18qrhfzlp62aNpTAzQ3K5-QZPV_8CqQ&sz=w800" },
@@ -34,20 +38,80 @@ const CERTIFICATES = [
 ];
 
 const Certifications = () => {
-  const duplicatedCertificates = [...CERTIFICATES, ...CERTIFICATES];
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = () => {
+    if (sliderRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+    }
+  };
+
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (slider) {
+      slider.addEventListener("scroll", checkScroll);
+      checkScroll();
+      
+      // Also listen to window resize
+      window.addEventListener("resize", checkScroll);
+    }
+    return () => {
+      if (slider) {
+        slider.removeEventListener("scroll", checkScroll);
+      }
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, []);
+
+  const scroll = (direction: "left" | "right") => {
+    if (sliderRef.current) {
+      const card = sliderRef.current.querySelector(".cert-card");
+      // Use card width + gap (50px) or default to 450px
+      const cardWidth = card ? card.getBoundingClientRect().width + 50 : 450;
+      const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
+      sliderRef.current.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <div className="certifications-section section-container" id="certifications">
-      <h2>
-        My <span>Certifications</span>
-      </h2>
+      <div className="certifications-header">
+        <h2>
+          My <span>Certifications</span>
+        </h2>
+        <div className="certifications-controls">
+          <button 
+            className={`control-btn prev ${!canScrollLeft ? "disabled" : ""}`} 
+            onClick={() => scroll("left")}
+            disabled={!canScrollLeft}
+            aria-label="Previous Certificates"
+          >
+            <MdChevronLeft />
+          </button>
+          <button 
+            className={`control-btn next ${!canScrollRight ? "disabled" : ""}`} 
+            onClick={() => scroll("right")}
+            disabled={!canScrollRight}
+            aria-label="Next Certificates"
+          >
+            <MdChevronRight />
+          </button>
+        </div>
+      </div>
       
-      <div className="certifications-slider-container">
+      <div className="certifications-slider-container" ref={sliderRef}>
         <div className="certifications-track">
-          {duplicatedCertificates.map((cert, index) => (
+          {CERTIFICATES.map((cert) => (
             <div 
               className="cert-card" 
-              key={`${cert.id}-${index}`}
+              key={cert.id}
               onClick={() => window.open(cert.link, "_blank", "noopener,noreferrer")}
               title={`View ${cert.name}`}
             >

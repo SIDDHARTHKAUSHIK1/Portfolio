@@ -11,51 +11,91 @@
   width: 100%;
 }
 
+.certifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 60px;
+  padding: 0 10vw;
+}
+
 .certifications-section h2 {
   font-size: 70px;
   font-weight: 500;
-  margin-bottom: 60px;
-  padding-left: 10vw;
+  margin: 0;
+  padding: 0;
 }
 
 .certifications-section h2 > span {
   color: var(--accentColor);
 }
 
+.certifications-controls {
+  display: flex;
+  gap: 20px;
+}
+
+.control-btn {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #363636;
+  color: #fff;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.control-btn:hover:not(.disabled) {
+  background: rgba(127, 64, 255, 0.1);
+  border-color: var(--accentColor);
+  color: var(--accentColor);
+  transform: scale(1.08);
+  box-shadow: 0 0 20px rgba(170, 66, 255, 0.3);
+}
+
+.control-btn:active:not(.disabled) {
+  transform: scale(0.95);
+}
+
+.control-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  border-color: #222;
+  color: #555;
+  background: transparent;
+}
+
 .certifications-slider-container {
-  overflow: hidden;
+  overflow-x: auto;
   width: 100vw;
   padding: 40px 0;
   position: relative;
   left: 50%;
   transform: translateX(-50%);
   margin-left: calc(-50vw + 50%);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* IE/Edge */
+  scroll-behavior: smooth;
+}
+
+.certifications-slider-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .certifications-track {
   display: flex;
   gap: 50px;
   width: max-content;
-  animation: scrollCertifications 200s linear infinite;
   justify-content: flex-start;
   align-items: flex-start;
-}
-
-/* Pause the belt animation entirely when the user hovers over it so they can easily click! */
-.certifications-slider-container:hover .certifications-track {
-  animation-play-state: paused;
-}
-
-@keyframes scrollCertifications {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    /* Translate exactly half of the duplicated list width to loop perfectly. 
-       -50% translates exactly half the track. Since the track contains 2 duplicated sets + gaps, 
-       this creates a mathematically perfect infinite scroll belt without jarring jumps. */
-    transform: translateX(-50%); 
-  }
+  padding: 0 10vw;
 }
 
 .cert-card {
@@ -138,9 +178,21 @@
 }
 
 @media only screen and (max-width: 900px) {
+  .certifications-header {
+    padding: 0 5vw;
+    margin-bottom: 40px;
+  }
   .certifications-section h2 {
     font-size: 50px;
-    padding-left: 5vw;
+  }
+  .certifications-track {
+    padding: 0 5vw;
+    gap: 30px;
+  }
+  .control-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 26px;
   }
   .cert-card {
     width: 300px;
@@ -157,6 +209,14 @@
 }
 
 @media only screen and (max-width: 600px) {
+  .certifications-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .certifications-controls {
+    align-self: flex-end;
+  }
   .certifications-section h2 {
     font-size: 40px;
   }
