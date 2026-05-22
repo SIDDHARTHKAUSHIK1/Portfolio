@@ -39,41 +39,67 @@ const CERTIFICATES = [
 
 const Certifications = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
+  const animationRef = useRef<number | null>(null);
+  const scrollTimeoutRef = useRef<number | null>(null);
 
-  const checkScroll = () => {
-    if (sliderRef.current) {
-      const { scrollLeft, scrollWidth, clientWidth } = sliderRef.current;
-      setCanScrollLeft(scrollLeft > 5);
-      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
-    }
-  };
+  const duplicatedCertificates = [...CERTIFICATES, ...CERTIFICATES];
 
   useEffect(() => {
     const slider = sliderRef.current;
-    if (slider) {
-      slider.addEventListener("scroll", checkScroll);
-      checkScroll();
-      
-      // Also listen to window resize
-      window.addEventListener("resize", checkScroll);
-    }
-    return () => {
-      if (slider) {
-        slider.removeEventListener("scroll", checkScroll);
+    if (!slider) return;
+
+    const animate = () => {
+      if (!isHovered && !isScrolling) {
+        const speed = 0.8; // Butter-smooth continuous scroll speed
+        let nextScroll = slider.scrollLeft + speed;
+        const halfWidth = slider.scrollWidth / 2;
+
+        if (nextScroll >= halfWidth) {
+          nextScroll = nextScroll - halfWidth;
+        }
+        slider.scrollLeft = nextScroll;
       }
-      window.removeEventListener("resize", checkScroll);
+      animationRef.current = requestAnimationFrame(animate);
     };
-  }, []);
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isHovered, isScrolling]);
 
   const scroll = (direction: "left" | "right") => {
     if (sliderRef.current) {
-      const card = sliderRef.current.querySelector(".cert-card");
-      // Use card width + gap (50px) or default to 450px
+      setIsScrolling(true);
+      if (scrollTimeoutRef.current) {
+        window.clearTimeout(scrollTimeoutRef.current);
+      }
+      
+      // Resume auto-scroll after 3 seconds of inactivity
+      scrollTimeoutRef.current = window.setTimeout(() => {
+        setIsScrolling(false);
+      }, 3000);
+
+      const slider = sliderRef.current;
+      const halfWidth = slider.scrollWidth / 2;
+
+      // Infinite wrapping check to prevent hitting boundary
+      if (direction === "left" && slider.scrollLeft <= 5) {
+        slider.scrollLeft = halfWidth;
+      } else if (direction === "right" && slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5) {
+        slider.scrollLeft = slider.scrollLeft - halfWidth;
+      }
+
+      const card = slider.querySelector(".cert-card");
       const cardWidth = card ? card.getBoundingClientRect().width + 50 : 450;
       const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
-      sliderRef.current.scrollBy({
+      
+      slider.scrollBy({
         left: scrollAmount,
         behavior: "smooth",
       });
@@ -88,17 +114,15 @@ const Certifications = () => {
         </h2>
         <div className="certifications-controls">
           <button 
-            className={`control-btn prev ${!canScrollLeft ? "disabled" : ""}`} 
+            className="control-btn prev" 
             onClick={() => scroll("left")}
-            disabled={!canScrollLeft}
             aria-label="Previous Certificates"
           >
             <MdChevronLeft />
           </button>
           <button 
-            className={`control-btn next ${!canScrollRight ? "disabled" : ""}`} 
+            className="control-btn next" 
             onClick={() => scroll("right")}
-            disabled={!canScrollRight}
             aria-label="Next Certificates"
           >
             <MdChevronRight />
@@ -106,12 +130,17 @@ const Certifications = () => {
         </div>
       </div>
       
-      <div className="certifications-slider-container" ref={sliderRef}>
+      <div 
+        className="certifications-slider-container" 
+        ref={sliderRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div className="certifications-track">
-          {CERTIFICATES.map((cert) => (
+          {duplicatedCertificates.map((cert, index) => (
             <div 
               className="cert-card" 
-              key={cert.id}
+              key={`${cert.id}-${index}`}
               onClick={() => window.open(cert.link, "_blank", "noopener,noreferrer")}
               title={`View ${cert.name}`}
             >
