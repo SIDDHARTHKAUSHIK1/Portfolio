@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { MdChevronLeft, MdChevronRight } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight, MdClose, MdArrowOutward } from "react-icons/md";
 import "./styles/Certifications.css";
 
 const CERTIFICATES = [
@@ -41,6 +41,7 @@ const Certifications = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [selectedCertIndex, setSelectedCertIndex] = useState<number | null>(null);
   const animationRef = useRef<number | null>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
 
@@ -51,7 +52,8 @@ const Certifications = () => {
     if (!slider) return;
 
     const animate = () => {
-      if (!isHovered && !isScrolling) {
+      // Pause auto-scroll when hovered, actively manual-scrolling, or when fullscreen modal is active
+      if (!isHovered && !isScrolling && selectedCertIndex === null) {
         const speed = 0.8; // Butter-smooth continuous scroll speed
         let nextScroll = slider.scrollLeft + speed;
         const halfWidth = slider.scrollWidth / 2;
@@ -71,7 +73,46 @@ const Certifications = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovered, isScrolling]);
+  }, [isHovered, isScrolling, selectedCertIndex]);
+
+  const openFullscreen = (certId: number) => {
+    const idx = CERTIFICATES.findIndex((c) => c.id === certId);
+    setSelectedCertIndex(idx);
+  };
+
+  const closeFullscreen = () => {
+    setSelectedCertIndex(null);
+  };
+
+  const navigateModal = (direction: "prev" | "next") => {
+    if (selectedCertIndex === null) return;
+    let nextIdx = selectedCertIndex;
+    if (direction === "prev") {
+      nextIdx = selectedCertIndex === 0 ? CERTIFICATES.length - 1 : selectedCertIndex - 1;
+    } else {
+      nextIdx = selectedCertIndex === CERTIFICATES.length - 1 ? 0 : selectedCertIndex + 1;
+    }
+    setSelectedCertIndex(nextIdx);
+  };
+
+  useEffect(() => {
+    if (selectedCertIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeFullscreen();
+      } else if (e.key === "ArrowLeft") {
+        navigateModal("prev");
+      } else if (e.key === "ArrowRight") {
+        navigateModal("next");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedCertIndex]);
 
   const scroll = (direction: "left" | "right") => {
     if (sliderRef.current) {
@@ -141,7 +182,7 @@ const Certifications = () => {
             <div 
               className="cert-card" 
               key={`${cert.id}-${index}`}
-              onClick={() => window.open(cert.link, "_blank", "noopener,noreferrer")}
+              onClick={() => openFullscreen(cert.id)}
               title={`View ${cert.name}`}
             >
               <div className="cert-image-container">
@@ -149,12 +190,57 @@ const Certifications = () => {
               </div>
               <div className="cert-info">
                 <h4>{cert.name}</h4>
-                <p>Click to view record &rarr;</p>
+                <p>Click to view fullscreen &rarr;</p>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* Immersive Fullscreen Certificate Modal */}
+      {selectedCertIndex !== null && (
+        <div className="cert-modal-overlay" onClick={closeFullscreen}>
+          <button className="modal-close-btn" onClick={closeFullscreen} aria-label="Close fullscreen">
+            <MdClose />
+          </button>
+          
+          <button 
+            className="modal-nav-btn prev" 
+            onClick={(e) => { e.stopPropagation(); navigateModal("prev"); }}
+            aria-label="Previous certificate"
+          >
+            <MdChevronLeft />
+          </button>
+
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-image-wrapper">
+              <img 
+                src={CERTIFICATES[selectedCertIndex].image} 
+                alt={CERTIFICATES[selectedCertIndex].name} 
+              />
+            </div>
+            <div className="modal-info-panel">
+              <h3>{CERTIFICATES[selectedCertIndex].name}</h3>
+              <a 
+                href={CERTIFICATES[selectedCertIndex].link} 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="modal-external-link"
+              >
+                View Original Record <MdArrowOutward />
+              </a>
+            </div>
+          </div>
+
+          <button 
+            className="modal-nav-btn next" 
+            onClick={(e) => { e.stopPropagation(); navigateModal("next"); }}
+            aria-label="Next certificate"
+          >
+            <MdChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
