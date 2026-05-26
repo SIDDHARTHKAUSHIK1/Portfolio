@@ -39,6 +39,7 @@ const CERTIFICATES = [
 
 const Certifications = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCertIndex, setSelectedCertIndex] = useState<number | null>(null);
@@ -82,6 +83,20 @@ const Certifications = () => {
 
   const closeFullscreen = () => {
     setSelectedCertIndex(null);
+  };
+
+  const toggleNativeFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const element = imageRef.current;
+    if (!element) return;
+
+    if (!document.fullscreenElement) {
+      element.requestFullscreen?.().catch((err) => {
+        console.error("Fullscreen request failed:", err);
+      });
+    } else {
+      document.exitFullscreen?.();
+    }
   };
 
   const navigateModal = (direction: "prev" | "next") => {
@@ -215,8 +230,11 @@ const Certifications = () => {
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-image-wrapper">
               <img 
-                src={CERTIFICATES[selectedCertIndex].image} 
+                ref={imageRef}
+                src={CERTIFICATES[selectedCertIndex].image.replace("&sz=w800", "&sz=w2000")} 
                 alt={CERTIFICATES[selectedCertIndex].name} 
+                onClick={toggleNativeFullscreen}
+                title="Click to toggle true fullscreen"
               />
             </div>
             <div className="modal-info-panel">
