@@ -205,7 +205,16 @@ const Work = () => {
                   <h3>{String(index + 1).padStart(2, "0")}</h3>
 
                   <div>
-                    <h4>{project.name}</h4>
+                    <h4>
+                      <a 
+                        href={project.link} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="project-title-link"
+                      >
+                        {project.name}
+                      </a>
+                    </h4>
                     <p>{project.category}</p>
                   </div>
                 </div>

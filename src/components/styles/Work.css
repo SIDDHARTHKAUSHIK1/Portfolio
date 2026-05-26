@@ -231,6 +231,14 @@
   font-weight: 400;
   margin: 0;
 }
+.project-title-link {
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.project-title-link:hover {
+  color: var(--accentColor);
+}
 .work-info p {
   font-weight: 200;
   color: #adacac;
