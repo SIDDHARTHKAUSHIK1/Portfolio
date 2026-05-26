@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect } from "react";
-import { MdChevronLeft, MdChevronRight, MdClose, MdArrowOutward } from "react-icons/md";
+import { createPortal } from "react-dom";
+import { MdChevronLeft, MdChevronRight, MdClose, MdArrowOutward, MdFolderOpen } from "react-icons/md";
 import "./styles/Certifications.css";
 
 const CERTIFICATES = [
@@ -43,6 +44,7 @@ const Certifications = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [selectedCertIndex, setSelectedCertIndex] = useState<number | null>(null);
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   const animationRef = useRef<number | null>(null);
   const scrollTimeoutRef = useRef<number | null>(null);
 
@@ -53,8 +55,8 @@ const Certifications = () => {
     if (!slider) return;
 
     const animate = () => {
-      // Pause auto-scroll when hovered, actively manual-scrolling, or when fullscreen modal is active
-      if (!isHovered && !isScrolling && selectedCertIndex === null) {
+      // Pause auto-scroll when hovered, actively manual-scrolling, or when fullscreen modal/directory is active
+      if (!isHovered && !isScrolling && selectedCertIndex === null && !isDirectoryOpen) {
         const speed = 0.8; // Butter-smooth continuous scroll speed
         let nextScroll = slider.scrollLeft + speed;
         const halfWidth = slider.scrollWidth / 2;
@@ -74,7 +76,7 @@ const Certifications = () => {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [isHovered, isScrolling, selectedCertIndex]);
+  }, [isHovered, isScrolling, selectedCertIndex, isDirectoryOpen]);
 
   const openFullscreen = (certId: number) => {
     const idx = CERTIFICATES.findIndex((c) => c.id === certId);
@@ -170,6 +172,13 @@ const Certifications = () => {
         </h2>
         <div className="certifications-controls">
           <button 
+            className="directory-toggle-btn"
+            onClick={() => setIsDirectoryOpen(true)}
+            title="Open Certificate Directory"
+          >
+            <MdFolderOpen style={{ marginRight: '8px', fontSize: '20px' }} /> View All
+          </button>
+          <button 
             className="control-btn prev" 
             onClick={() => scroll("left")}
             aria-label="Previous Certificates"
@@ -212,8 +221,8 @@ const Certifications = () => {
         </div>
       </div>
 
-      {/* Immersive Fullscreen Certificate Modal */}
-      {selectedCertIndex !== null && (
+      {/* Immersive Fullscreen Certificate Modal inside React Portal */}
+      {selectedCertIndex !== null && createPortal(
         <div className="cert-modal-overlay" onClick={closeFullscreen}>
           <button className="modal-close-btn" onClick={closeFullscreen} aria-label="Close fullscreen">
             <MdClose />
@@ -257,7 +266,41 @@ const Certifications = () => {
           >
             <MdChevronRight />
           </button>
-        </div>
+        </div>,
+        document.body
+      )}
+
+      {/* Certificate Folder Directory Overlay Modal inside React Portal */}
+      {isDirectoryOpen && createPortal(
+        <div className="cert-directory-overlay" onClick={() => setIsDirectoryOpen(false)}>
+          <div className="cert-directory-content" onClick={(e) => e.stopPropagation()}>
+            <div className="cert-directory-header">
+              <h3>Certificate Directory</h3>
+              <button className="directory-close-btn" onClick={() => setIsDirectoryOpen(false)} aria-label="Close directory">
+                <MdClose />
+              </button>
+            </div>
+            <div className="cert-directory-grid">
+              {CERTIFICATES.map((cert) => (
+                <div 
+                  className="directory-card" 
+                  key={cert.id}
+                  onClick={() => {
+                    const idx = CERTIFICATES.findIndex((c) => c.id === cert.id);
+                    setSelectedCertIndex(idx);
+                    setIsDirectoryOpen(false);
+                  }}
+                >
+                  <div className="directory-image-container">
+                    <img src={cert.image} alt={cert.name} loading="lazy" />
+                  </div>
+                  <h4>{cert.name}</h4>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
