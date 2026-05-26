@@ -4,11 +4,18 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { useGSAP } from "@gsap/react";
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 const PROJECTS = [
+  {
+    name: "Sentinel AI Playbook Platform",
+    category: "AI-Powered Incident Response & Portfolio Risk Platform",
+    tools: "FastAPI, React, TypeScript, Tailwind CSS, MongoDB, Groq AI",
+    image: "/images/playbook-ai-preview.png",
+    link: "https://play-book-ai.vercel.app/",
+  },
   {
     name: "Smart Parking Detection System",
     category: "Computer Vision & Data Analysis",
@@ -40,6 +47,7 @@ const PROJECTS = [
 ] as const;
 
 const Work = () => {
+  const [activeIndex, setActiveIndex] = useState(0);
   const workSectionRef = useRef<HTMLDivElement>(null);
   const scrollTrackRef = useRef<HTMLDivElement>(null);
 
@@ -78,6 +86,8 @@ const Work = () => {
             "--work-scroll-progress",
             String(self.progress)
           );
+          const index = Math.round(self.progress * (PROJECTS.length - 1));
+          setActiveIndex(index);
         },
       },
     });
@@ -169,10 +179,20 @@ const Work = () => {
             My <span>Work</span>
           </h2>
           <div className="work-nav-arrows">
-            <button className="work-arrow-btn prev-btn" onClick={handlePrev} aria-label="Previous Project">
+            <button 
+              className={`work-arrow-btn prev-btn ${activeIndex === 0 ? "disabled" : ""}`} 
+              onClick={handlePrev} 
+              disabled={activeIndex === 0}
+              aria-label="Previous Project"
+            >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
             </button>
-            <button className="work-arrow-btn next-btn" onClick={handleNext} aria-label="Next Project">
+            <button 
+              className={`work-arrow-btn next-btn ${activeIndex === PROJECTS.length - 1 ? "disabled" : ""}`} 
+              onClick={handleNext} 
+              disabled={activeIndex === PROJECTS.length - 1}
+              aria-label="Next Project"
+            >
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
             </button>
           </div>
@@ -218,7 +238,7 @@ const Work = () => {
               <button
                 key={project.link}
                 type="button"
-                className="work-scroll-jump"
+                className={`work-scroll-jump ${activeIndex === index ? "active" : ""}`}
                 onClick={() => jumpToProject(index)}
               >
                 <span className="work-scroll-jump-num">

@@ -43,6 +43,16 @@
   transform: scale(1.05);
 }
 
+.work-arrow-btn.disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+  border-color: #2c2c2c;
+  color: #555;
+  background: rgba(0, 0, 0, 0.15);
+  transform: none;
+}
+
 .work-arrow-btn svg {
   width: 24px;
   height: 24px;
@@ -116,7 +126,7 @@
   font-weight: 400;
   text-align: left;
   cursor: pointer;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
+  transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s, box-shadow 0.2s;
 }
 .work-scroll-jump:hover,
 .work-scroll-jump:focus-visible {
@@ -124,6 +134,13 @@
   border-color: var(--accentColor);
   color: #fff;
   background: rgba(127, 64, 255, 0.08);
+}
+.work-scroll-jump.active {
+  border-color: var(--accentColor);
+  color: #fff;
+  background: rgba(127, 64, 255, 0.15);
+  box-shadow: 0 0 15px rgba(127, 64, 255, 0.25);
+  transform: translateY(-2px);
 }
 .work-scroll-jump-num {
   font-size: 13px;
