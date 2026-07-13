@@ -42,7 +42,7 @@ const Career = () => {
               <h3>2026</h3>
             </div>
             <p>
-              YGPA: 7.1 / 10 | AKTU University. Reliance Foundation Scholar. NPTEL Certified.
+              AKTU University. Reliance Foundation Scholar. NPTEL Certified.
             </p>
           </div>
           <div className="career-info-box">
@@ -54,7 +54,7 @@ const Career = () => {
               <h3>2022</h3>
             </div>
             <p>
-              67% | CBSE Board
+              CBSE Board
             </p>
           </div>
         </div>
