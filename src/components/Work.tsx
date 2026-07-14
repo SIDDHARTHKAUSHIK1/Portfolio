@@ -10,9 +10,9 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 const PROJECTS = [
   {
-    name: "Sentinel AI Playbook Platform",
+    name: "Playbook AI",
     category: "AI-Powered Incident Response & Portfolio Risk Platform",
-    tools: "FastAPI, React, TypeScript, Tailwind CSS, MongoDB, Groq AI",
+    tools: "React, TypeScript, Tailwind CSS, Radix UI, Zustand",
     image: "/images/playbook-ai-preview.png",
     link: "https://play-book-ai.vercel.app/",
   },
@@ -38,9 +38,9 @@ const PROJECTS = [
     link: "https://drone-detection-tracking.vercel.app/",
   },
   {
-    name: "Crime Detection System",
-    category: "Data Analysis & Web Application",
-    tools: "React, Vite, TypeScript, Vercel",
+    name: "AI-Powered Crime Detection & Surveillance Dashboard",
+    category: "Real-time Geocoded Surveillance Map & Detection Pipeline",
+    tools: "React.js, Vite, FastAPI, TensorFlow, OpenCV, Docker, CI/CD, Vercel, Render",
     image: "/images/crime-detection-preview.png",
     link: "https://crime-ranking.vercel.app/",
   },

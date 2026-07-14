@@ -6,10 +6,9 @@ const About = () => {
       <div className="about-me">
         <h3 className="title">About Me</h3>
         <p className="para">
-          Final-year B.Tech CSE student with hands-on experience in AI-powered
-          app development, computer vision, full-stack engineering, and data
-          analysis. Skilled in Python, Java, .NET concepts, and cloud-native
-          architectures.
+          GenAI & React.js developer with hands-on experience building LLM-integrated,
+          full-stack web apps. 1 year of sustained experience as a GenAI Systems
+          Intern with the Indian Army. Oracle OCI certified in AI Foundations & Generative AI.
         </p>
       </div>
     </div>

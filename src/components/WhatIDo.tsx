@@ -94,17 +94,21 @@ const WhatIDo = () => {
               </p>
               <h5>Skillset & tools</h5>
               <div className="what-content-flex">
-                <div className="what-tags">JavaScript</div>
-                <div className="what-tags">TypeScript</div>
                 <div className="what-tags">React.js</div>
                 <div className="what-tags">Next.js</div>
+                <div className="what-tags">TypeScript</div>
+                <div className="what-tags">JavaScript</div>
+                <div className="what-tags">Tailwind CSS</div>
+                <div className="what-tags">Radix UI</div>
                 <div className="what-tags">Node.js</div>
-                <div className="what-tags">Express.js</div>
-                <div className="what-tags">MySQL</div>
-                <div className="what-tags">PostgreSQL</div>
+                <div className="what-tags">FastAPI</div>
                 <div className="what-tags">MongoDB</div>
-                <div className="what-tags">Kafka</div>
+                <div className="what-tags">PostgreSQL</div>
                 <div className="what-tags">REST APIs</div>
+                <div className="what-tags">Docker</div>
+                <div className="what-tags">AWS</div>
+                <div className="what-tags">Vercel</div>
+                <div className="what-tags">Render</div>
               </div>
               <div className="what-arrow"></div>
             </div>
@@ -135,14 +139,17 @@ const WhatIDo = () => {
               </p>
               <h5>Skillset & tools</h5>
               <div className="what-content-flex">
+                <div className="what-tags">Prompt Eng.</div>
+                <div className="what-tags">LangChain</div>
+                <div className="what-tags">RAG</div>
+                <div className="what-tags">Ollama</div>
                 <div className="what-tags">Python</div>
+                <div className="what-tags">PyTorch</div>
+                <div className="what-tags">TensorFlow</div>
                 <div className="what-tags">OpenCV</div>
-                <div className="what-tags">Pandas</div>
-                <div className="what-tags">NumPy</div>
-                <div className="what-tags">Scikit-learn</div>
-                <div className="what-tags">Ollama (AI)</div>
                 <div className="what-tags">Oracle Cloud (OCI)</div>
-                <div className="what-tags">ElasticSearch</div>
+                <div className="what-tags">Power BI</div>
+                <div className="what-tags">Excel</div>
               </div>
               <div className="what-arrow"></div>
             </div>
