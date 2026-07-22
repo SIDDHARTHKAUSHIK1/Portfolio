@@ -157,8 +157,8 @@ const Work = () => {
   );
 
   return (
-    <div className="work-section section-container" id="work">
-      <div className="work-header-container">
+    <div className="work-section" id="work">
+      <div className="work-header-container section-container">
         <div className="work-title-group">
           <h2>
             My <span>Work</span>

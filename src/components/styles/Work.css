@@ -19,7 +19,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 120px;
 }
 
 .work-nav-arrows {
@@ -459,11 +458,12 @@
 .work-slider-container {
   overflow-x: auto;
   width: 100vw;
-  padding: 40px 0;
   position: relative;
   left: 50%;
-  transform: translateX(-50%);
-  margin-left: calc(-50vw + 50%);
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  padding: 40px 0;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
   scroll-behavior: smooth;
