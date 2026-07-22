@@ -1,14 +1,8 @@
 import "./styles/Work.css";
 import WorkImage from "./WorkImage";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { useGSAP } from "@gsap/react";
 import { useCallback, useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { MdGridView, MdClose, MdArrowOutward, MdSearch, MdArrowForward } from "react-icons/md";
-
-gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 const PROJECTS = [
   {
@@ -59,90 +53,48 @@ const Work = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const workSectionRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(() => {
-    let translateX = 0;
-
-    function setTranslateX() {
-      const box = document.getElementsByClassName("work-box");
-      if (!box.length) return;
-      const rectLeft = document
-        .querySelector(".work-container")!
-        .getBoundingClientRect().left;
-      const rect = box[0].getBoundingClientRect();
-      const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-      const padding =
-        parseInt(window.getComputedStyle(box[0]).padding, 10) / 2;
-      translateX =
-        rect.width * box.length - (rectLeft + parentWidth) + padding;
-    }
-
-    setTranslateX();
-
-    const sectionEl = workSectionRef.current;
-    sectionEl?.style.setProperty("--work-scroll-progress", "0");
-
-    const timeline = gsap.timeline({
-      scrollTrigger: {
-        trigger: ".work-section",
-        start: "top top",
-        end: `+=${translateX}`,
-        scrub: true,
-        pin: true,
-        id: "work",
-        onUpdate: (self) => {
-          sectionEl?.style.setProperty(
-            "--work-scroll-progress",
-            String(self.progress)
-          );
-          const index = Math.round(self.progress * (PROJECTS.length - 1));
-          setActiveIndex(index);
-        },
-      },
-    });
-
-    timeline.to(".work-flex", {
-      x: -translateX,
-      ease: "none",
-    });
-
-    return () => {
-      timeline.kill();
-      ScrollTrigger.getById("work")?.kill();
-      sectionEl?.style.removeProperty("--work-scroll-progress");
-    };
-  }, []);
+  const flexContainerRef = useRef<HTMLDivElement>(null);
 
   const jumpToProject = useCallback((index: number) => {
-    const st = ScrollTrigger.getById("work");
-    if (!st || PROJECTS.length < 2) return;
-    const p = PROJECTS.length <= 1 ? 0 : index / (PROJECTS.length - 1);
-
-    // Use GSAP's scrollTo plugin for smooth navigation
-    const targetScroll = st.start + (st.end - st.start) * p;
-    gsap.to(window, {
-      duration: 1,
-      scrollTo: { y: targetScroll, autoKill: false },
-      ease: "power2.inOut",
-    });
+    const container = flexContainerRef.current;
+    if (!container) return;
+    const boxes = container.querySelectorAll(".work-box");
+    if (boxes[index]) {
+      boxes[index].scrollIntoView({
+        behavior: "smooth",
+        inline: "start",
+        block: "nearest",
+      });
+      setActiveIndex(index);
+    }
   }, []);
 
   const handleNext = useCallback(() => {
-    const st = ScrollTrigger.getById("work");
-    if (!st || PROJECTS.length < 2) return;
-    const currentIndex = Math.round(st.progress * (PROJECTS.length - 1));
-    const nextIndex = Math.min(currentIndex + 1, PROJECTS.length - 1);
+    const nextIndex = Math.min(activeIndex + 1, PROJECTS.length - 1);
     jumpToProject(nextIndex);
-  }, [jumpToProject]);
+  }, [activeIndex, jumpToProject]);
 
   const handlePrev = useCallback(() => {
-    const st = ScrollTrigger.getById("work");
-    if (!st || PROJECTS.length < 2) return;
-    const currentIndex = Math.round(st.progress * (PROJECTS.length - 1));
-    const prevIndex = Math.max(currentIndex - 1, 0);
+    const prevIndex = Math.max(activeIndex - 1, 0);
     jumpToProject(prevIndex);
-  }, [jumpToProject]);
+  }, [activeIndex, jumpToProject]);
+
+  const handleScroll = () => {
+    const container = flexContainerRef.current;
+    if (!container) return;
+    const boxes = container.querySelectorAll(".work-box");
+    const containerLeft = container.getBoundingClientRect().left;
+    let closestIndex = 0;
+    let minDiff = Infinity;
+    boxes.forEach((box, index) => {
+      const diff = Math.abs(box.getBoundingClientRect().left - containerLeft);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIndex = index;
+      }
+    });
+    setActiveIndex(closestIndex);
+  };
 
   const handleSelectProjectFromModal = (index: number) => {
     setIsModalOpen(false);
@@ -172,13 +124,13 @@ const Work = () => {
   );
 
   return (
-    <div className="work-section" id="work" ref={workSectionRef}>
+    <div className="work-section" id="work">
       <div className="work-container section-container">
         <div className="work-header-container">
-          <h2>
-            My <span>Work</span>
-          </h2>
-          <div className="work-header-actions">
+          <div className="work-title-group">
+            <h2>
+              My <span>Work</span>
+            </h2>
             <button
               className="view-all-header-btn"
               onClick={() => setIsModalOpen(true)}
@@ -187,72 +139,69 @@ const Work = () => {
               <MdGridView className="btn-icon" />
               <span>View All ({PROJECTS.length})</span>
             </button>
-            <div className="work-nav-arrows">
-              <button
-                className={`work-arrow-btn prev-btn ${activeIndex === 0 ? "disabled" : ""}`}
-                onClick={handlePrev}
-                disabled={activeIndex === 0}
-                aria-label="Previous Project"
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button
-                className={`work-arrow-btn next-btn ${activeIndex === PROJECTS.length - 1 ? "disabled" : ""}`}
-                onClick={handleNext}
-                disabled={activeIndex === PROJECTS.length - 1}
-                aria-label="Next Project"
-              >
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
+          </div>
+
+          <div className="work-nav-arrows">
+            <button
+              className={`work-arrow-btn prev-btn ${activeIndex === 0 ? "disabled" : ""}`}
+              onClick={handlePrev}
+              disabled={activeIndex === 0}
+              aria-label="Previous Project"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              className={`work-arrow-btn next-btn ${activeIndex === PROJECTS.length - 1 ? "disabled" : ""}`}
+              onClick={handleNext}
+              disabled={activeIndex === PROJECTS.length - 1}
+              aria-label="Next Project"
+            >
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
         </div>
-        <div className="work-flex">
-          {PROJECTS.map((project, index) => (
-            <div className="work-box" key={project.link}>
-              <div className="work-info">
-                <div className="work-title">
-                  <h3>{String(index + 1).padStart(2, "0")}</h3>
 
-                  <div>
-                    <h4>
-                      <a
-                        href={project.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="project-title-link"
-                      >
-                        {project.name}
-                      </a>
-                    </h4>
-                    <p>{project.category}</p>
+        <div
+          className="work-flex-container"
+          ref={flexContainerRef}
+          onScroll={handleScroll}
+        >
+          <div className="work-flex">
+            {PROJECTS.map((project, index) => (
+              <div className="work-box" key={project.link}>
+                <div className="work-info">
+                  <div className="work-title">
+                    <h3>{String(index + 1).padStart(2, "0")}</h3>
+
+                    <div>
+                      <h4>
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-title-link"
+                        >
+                          {project.name}
+                        </a>
+                      </h4>
+                      <p>{project.category}</p>
+                    </div>
                   </div>
+                  <h4>Tools and features</h4>
+                  <p>{project.tools}</p>
                 </div>
-                <h4>Tools and features</h4>
-                <p>{project.tools}</p>
+                <WorkImage
+                  image={project.image}
+                  alt={project.name}
+                  link={project.link}
+                />
               </div>
-              <WorkImage
-                image={project.image}
-                alt={project.name}
-                link={project.link}
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="work-bottom-actions">
-          <button
-            className="view-all-main-btn"
-            onClick={() => setIsModalOpen(true)}
-            aria-label="View All Projects"
-          >
-            <MdGridView className="btn-icon" />
-            <span>View All Projects ({PROJECTS.length})</span>
-          </button>
+            ))}
+          </div>
         </div>
       </div>
 
