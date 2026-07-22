@@ -1,8 +1,8 @@
 import "./styles/Work.css";
 import WorkImage from "./WorkImage";
-import { useCallback, useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { MdGridView, MdClose, MdArrowOutward, MdSearch, MdArrowForward } from "react-icons/md";
+import { MdChevronLeft, MdChevronRight, MdGridView, MdClose, MdArrowOutward, MdSearch, MdArrowForward } from "react-icons/md";
 
 const PROJECTS = [
   {
@@ -50,57 +50,90 @@ const PROJECTS = [
 ] as const;
 
 const Work = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isScrolling, setIsScrolling] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const flexContainerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const scrollTimeoutRef = useRef<number | null>(null);
 
-  const jumpToProject = useCallback((index: number) => {
-    const container = flexContainerRef.current;
-    if (!container) return;
-    const boxes = container.querySelectorAll(".work-box");
-    if (boxes[index]) {
-      boxes[index].scrollIntoView({
-        behavior: "smooth",
-        inline: "start",
-        block: "nearest",
-      });
-      setActiveIndex(index);
-    }
-  }, []);
+  const duplicatedProjects = [...PROJECTS, ...PROJECTS];
 
-  const handleNext = useCallback(() => {
-    const nextIndex = Math.min(activeIndex + 1, PROJECTS.length - 1);
-    jumpToProject(nextIndex);
-  }, [activeIndex, jumpToProject]);
+  useEffect(() => {
+    const slider = sliderRef.current;
+    if (!slider) return;
 
-  const handlePrev = useCallback(() => {
-    const prevIndex = Math.max(activeIndex - 1, 0);
-    jumpToProject(prevIndex);
-  }, [activeIndex, jumpToProject]);
+    const animate = () => {
+      // Pause auto-scroll when hovered, actively scrolling via controls, or when modal is open
+      if (!isHovered && !isScrolling && !isModalOpen) {
+        const speed = 0.8; // Butter-smooth continuous scroll speed
+        let nextScroll = slider.scrollLeft + speed;
+        const halfWidth = slider.scrollWidth / 2;
 
-  const handleScroll = () => {
-    const container = flexContainerRef.current;
-    if (!container) return;
-    const boxes = container.querySelectorAll(".work-box");
-    const containerLeft = container.getBoundingClientRect().left;
-    let closestIndex = 0;
-    let minDiff = Infinity;
-    boxes.forEach((box, index) => {
-      const diff = Math.abs(box.getBoundingClientRect().left - containerLeft);
-      if (diff < minDiff) {
-        minDiff = diff;
-        closestIndex = index;
+        if (nextScroll >= halfWidth) {
+          nextScroll = nextScroll - halfWidth;
+        }
+        slider.scrollLeft = nextScroll;
       }
-    });
-    setActiveIndex(closestIndex);
+      animationRef.current = requestAnimationFrame(animate);
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [isHovered, isScrolling, isModalOpen]);
+
+  const scroll = (direction: "left" | "right") => {
+    if (sliderRef.current) {
+      setIsScrolling(true);
+      if (scrollTimeoutRef.current) {
+        window.clearTimeout(scrollTimeoutRef.current);
+      }
+
+      // Resume auto-scroll after 3 seconds of inactivity
+      scrollTimeoutRef.current = window.setTimeout(() => {
+        setIsScrolling(false);
+      }, 3000);
+
+      const slider = sliderRef.current;
+      const halfWidth = slider.scrollWidth / 2;
+
+      // Infinite wrapping check to prevent boundary hits
+      if (direction === "left" && slider.scrollLeft <= 5) {
+        slider.scrollLeft = halfWidth;
+      } else if (direction === "right" && slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5) {
+        slider.scrollLeft = slider.scrollLeft - halfWidth;
+      }
+
+      const card = slider.querySelector(".work-box");
+      const cardWidth = card ? card.getBoundingClientRect().width : 450;
+      const scrollAmount = direction === "left" ? -cardWidth : cardWidth;
+
+      slider.scrollBy({
+        left: scrollAmount,
+        behavior: "smooth",
+      });
+    }
   };
 
   const handleSelectProjectFromModal = (index: number) => {
     setIsModalOpen(false);
-    setTimeout(() => {
-      jumpToProject(index);
-    }, 150);
+    if (sliderRef.current) {
+      const slider = sliderRef.current;
+      const cards = slider.querySelectorAll(".work-box");
+      if (cards[index]) {
+        cards[index].scrollIntoView({
+          behavior: "smooth",
+          inline: "start",
+          block: "nearest",
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -124,84 +157,77 @@ const Work = () => {
   );
 
   return (
-    <div className="work-section" id="work">
-      <div className="work-container section-container">
-        <div className="work-header-container">
-          <div className="work-title-group">
-            <h2>
-              My <span>Work</span>
-            </h2>
-            <button
-              className="view-all-header-btn"
-              onClick={() => setIsModalOpen(true)}
-              aria-label="View All Projects"
-            >
-              <MdGridView className="btn-icon" />
-              <span>View All ({PROJECTS.length})</span>
-            </button>
-          </div>
-
-          <div className="work-nav-arrows">
-            <button
-              className={`work-arrow-btn prev-btn ${activeIndex === 0 ? "disabled" : ""}`}
-              onClick={handlePrev}
-              disabled={activeIndex === 0}
-              aria-label="Previous Project"
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              className={`work-arrow-btn next-btn ${activeIndex === PROJECTS.length - 1 ? "disabled" : ""}`}
-              onClick={handleNext}
-              disabled={activeIndex === PROJECTS.length - 1}
-              aria-label="Next Project"
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
-          </div>
+    <div className="work-section section-container" id="work">
+      <div className="work-header-container">
+        <div className="work-title-group">
+          <h2>
+            My <span>Work</span>
+          </h2>
+          <button
+            className="view-all-header-btn"
+            onClick={() => setIsModalOpen(true)}
+            aria-label="View All Projects"
+          >
+            <MdGridView className="btn-icon" />
+            <span>View All ({PROJECTS.length})</span>
+          </button>
         </div>
 
-        <div
-          className="work-flex-container"
-          ref={flexContainerRef}
-          onScroll={handleScroll}
-        >
-          <div className="work-flex">
-            {PROJECTS.map((project, index) => (
-              <div className="work-box" key={project.link}>
-                <div className="work-info">
-                  <div className="work-title">
-                    <h3>{String(index + 1).padStart(2, "0")}</h3>
+        <div className="work-nav-arrows">
+          <button
+            className="work-arrow-btn prev-btn"
+            onClick={() => scroll("left")}
+            aria-label="Previous Projects"
+          >
+            <MdChevronLeft />
+          </button>
+          <button
+            className="work-arrow-btn next-btn"
+            onClick={() => scroll("right")}
+            aria-label="Next Projects"
+          >
+            <MdChevronRight />
+          </button>
+        </div>
+      </div>
 
-                    <div>
-                      <h4>
-                        <a
-                          href={project.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="project-title-link"
-                        >
-                          {project.name}
-                        </a>
-                      </h4>
-                      <p>{project.category}</p>
-                    </div>
+      <div
+        className="work-slider-container"
+        ref={sliderRef}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className="work-track">
+          {duplicatedProjects.map((project, index) => (
+            <div className="work-box" key={`${project.link}-${index}`}>
+              <div className="work-info">
+                <div className="work-title">
+                  <h3>{String((index % PROJECTS.length) + 1).padStart(2, "0")}</h3>
+
+                  <div>
+                    <h4>
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="project-title-link"
+                      >
+                        {project.name}
+                      </a>
+                    </h4>
+                    <p>{project.category}</p>
                   </div>
-                  <h4>Tools and features</h4>
-                  <p>{project.tools}</p>
                 </div>
-                <WorkImage
-                  image={project.image}
-                  alt={project.name}
-                  link={project.link}
-                />
+                <h4>Tools and features</h4>
+                <p>{project.tools}</p>
               </div>
-            ))}
-          </div>
+              <WorkImage
+                image={project.image}
+                alt={project.name}
+                link={project.link}
+              />
+            </div>
+          ))}
         </div>
       </div>
 
