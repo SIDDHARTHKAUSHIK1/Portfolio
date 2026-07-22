@@ -10,6 +10,13 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
 const PROJECTS = [
   {
+    name: "LabelLens AI",
+    category: "Multi-Annotator Dataset Quality & IAA Audit Platform",
+    tools: "Python, Streamlit, Scikit-learn, Pandas, SciPy, Plotly, SQLite",
+    image: "/images/labellens-ai-preview.png",
+    link: "https://labellens-ai.streamlit.app/",
+  },
+  {
     name: "Playbook AI",
     category: "AI-Powered Incident Response & Portfolio Risk Platform",
     tools: "React, TypeScript, Tailwind CSS, Radix UI, Zustand",
