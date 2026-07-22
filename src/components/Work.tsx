@@ -4,7 +4,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { useGSAP } from "@gsap/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { MdGridView, MdClose, MdArrowOutward, MdSearch, MdArrowForward } from "react-icons/md";
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
 
@@ -55,8 +57,9 @@ const PROJECTS = [
 
 const Work = () => {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const workSectionRef = useRef<HTMLDivElement>(null);
-  const scrollTrackRef = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
     let translateX = 0;
@@ -111,54 +114,17 @@ const Work = () => {
     };
   }, []);
 
-  const seekScrollFromTrackClientX = useCallback((clientX: number) => {
-    const track = scrollTrackRef.current;
-    const st = ScrollTrigger.getById("work");
-    if (!track || !st) return;
-    const rect = track.getBoundingClientRect();
-    const p = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
-    const targetScroll = st.start + (st.end - st.start) * p;
-    gsap.to(window, {
-      duration: 0.3,
-      scrollTo: { y: targetScroll, autoKill: false },
-      ease: "power2.out"
-    });
-  }, []);
-
-  const onTrackPointerDown = useCallback(
-    (e: React.PointerEvent<HTMLDivElement>) => {
-      e.preventDefault();
-      seekScrollFromTrackClientX(e.clientX);
-      const track = scrollTrackRef.current;
-      if (!track) return;
-      track.setPointerCapture(e.pointerId);
-      const onMove = (ev: PointerEvent) =>
-        seekScrollFromTrackClientX(ev.clientX);
-      const onUp = (ev: PointerEvent) => {
-        track.releasePointerCapture(ev.pointerId);
-        window.removeEventListener("pointermove", onMove);
-        window.removeEventListener("pointerup", onUp);
-        window.removeEventListener("pointercancel", onUp);
-      };
-      window.addEventListener("pointermove", onMove);
-      window.addEventListener("pointerup", onUp);
-      window.addEventListener("pointercancel", onUp);
-    },
-    [seekScrollFromTrackClientX]
-  );
-
   const jumpToProject = useCallback((index: number) => {
     const st = ScrollTrigger.getById("work");
     if (!st || PROJECTS.length < 2) return;
-    const p =
-      PROJECTS.length <= 1 ? 0 : index / (PROJECTS.length - 1);
-    
+    const p = PROJECTS.length <= 1 ? 0 : index / (PROJECTS.length - 1);
+
     // Use GSAP's scrollTo plugin for smooth navigation
     const targetScroll = st.start + (st.end - st.start) * p;
     gsap.to(window, {
       duration: 1,
       scrollTo: { y: targetScroll, autoKill: false },
-      ease: "power2.inOut"
+      ease: "power2.inOut",
     });
   }, []);
 
@@ -178,6 +144,33 @@ const Work = () => {
     jumpToProject(prevIndex);
   }, [jumpToProject]);
 
+  const handleSelectProjectFromModal = (index: number) => {
+    setIsModalOpen(false);
+    setTimeout(() => {
+      jumpToProject(index);
+    }, 150);
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isModalOpen) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isModalOpen]);
+
+  const filteredProjects = PROJECTS.map((proj, originalIndex) => ({
+    ...proj,
+    originalIndex,
+  })).filter(
+    (proj) =>
+      proj.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      proj.tools.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="work-section" id="work" ref={workSectionRef}>
       <div className="work-container section-container">
@@ -185,23 +178,37 @@ const Work = () => {
           <h2>
             My <span>Work</span>
           </h2>
-          <div className="work-nav-arrows">
-            <button 
-              className={`work-arrow-btn prev-btn ${activeIndex === 0 ? "disabled" : ""}`} 
-              onClick={handlePrev} 
-              disabled={activeIndex === 0}
-              aria-label="Previous Project"
+          <div className="work-header-actions">
+            <button
+              className="view-all-header-btn"
+              onClick={() => setIsModalOpen(true)}
+              aria-label="View All Projects"
             >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+              <MdGridView className="btn-icon" />
+              <span>View All ({PROJECTS.length})</span>
             </button>
-            <button 
-              className={`work-arrow-btn next-btn ${activeIndex === PROJECTS.length - 1 ? "disabled" : ""}`} 
-              onClick={handleNext} 
-              disabled={activeIndex === PROJECTS.length - 1}
-              aria-label="Next Project"
-            >
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </button>
+            <div className="work-nav-arrows">
+              <button
+                className={`work-arrow-btn prev-btn ${activeIndex === 0 ? "disabled" : ""}`}
+                onClick={handlePrev}
+                disabled={activeIndex === 0}
+                aria-label="Previous Project"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button
+                className={`work-arrow-btn next-btn ${activeIndex === PROJECTS.length - 1 ? "disabled" : ""}`}
+                onClick={handleNext}
+                disabled={activeIndex === PROJECTS.length - 1}
+                aria-label="Next Project"
+              >
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
         <div className="work-flex">
@@ -213,10 +220,10 @@ const Work = () => {
 
                   <div>
                     <h4>
-                      <a 
-                        href={project.link} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className="project-title-link"
                       >
                         {project.name}
@@ -237,35 +244,114 @@ const Work = () => {
           ))}
         </div>
 
-        <div
-          className="work-scroll-nav"
-          aria-label="Browse projects: scroll the page, drag the bar, or use the shortcuts"
-        >
-          <div
-            ref={scrollTrackRef}
-            className="work-scroll-track"
-            onPointerDown={onTrackPointerDown}
-            role="presentation"
+        <div className="work-bottom-actions">
+          <button
+            className="view-all-main-btn"
+            onClick={() => setIsModalOpen(true)}
+            aria-label="View All Projects"
           >
-            <div className="work-scroll-track-fill" />
-          </div>
-          <div className="work-scroll-jumps">
-            {PROJECTS.map((project, index) => (
-              <button
-                key={project.link}
-                type="button"
-                className={`work-scroll-jump ${activeIndex === index ? "active" : ""}`}
-                onClick={() => jumpToProject(index)}
-              >
-                <span className="work-scroll-jump-num">
-                  {String(index + 1).padStart(2, "0")}
-                </span>
-                <span className="work-scroll-jump-name">{project.name}</span>
-              </button>
-            ))}
-          </div>
+            <MdGridView className="btn-icon" />
+            <span>View All Projects ({PROJECTS.length})</span>
+          </button>
         </div>
       </div>
+
+      {isModalOpen &&
+        createPortal(
+          <div className="projects-modal-backdrop" onClick={() => setIsModalOpen(false)}>
+            <div
+              className="projects-modal-content"
+              onClick={(e) => e.stopPropagation()}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="all-projects-title"
+            >
+              <div className="projects-modal-header">
+                <div>
+                  <h3 id="all-projects-title">
+                    All <span>Projects</span>
+                  </h3>
+                  <p>Browse through my complete portfolio of work ({PROJECTS.length} projects)</p>
+                </div>
+                <button
+                  className="projects-modal-close-btn"
+                  onClick={() => setIsModalOpen(false)}
+                  aria-label="Close Modal"
+                >
+                  <MdClose />
+                </button>
+              </div>
+
+              <div className="projects-modal-search-wrapper">
+                <MdSearch className="search-icon" />
+                <input
+                  type="text"
+                  className="projects-modal-search-input"
+                  placeholder="Search projects by name, category, or tools..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                />
+                {searchQuery && (
+                  <button
+                    className="search-clear-btn"
+                    onClick={() => setSearchQuery("")}
+                  >
+                    <MdClose />
+                  </button>
+                )}
+              </div>
+
+              <div className="projects-modal-grid">
+                {filteredProjects.length > 0 ? (
+                  filteredProjects.map((project) => (
+                    <div className="project-modal-card" key={project.link}>
+                      <div className="project-modal-card-image-wrap">
+                        <img src={project.image} alt={project.name} />
+                        <span className="project-modal-card-num">
+                          {String(project.originalIndex + 1).padStart(2, "0")}
+                        </span>
+                      </div>
+
+                      <div className="project-modal-card-info">
+                        <h4>{project.name}</h4>
+                        <p className="project-modal-card-category">{project.category}</p>
+                        <p className="project-modal-card-tools">
+                          <strong>Tools:</strong> {project.tools}
+                        </p>
+                      </div>
+
+                      <div className="project-modal-card-actions">
+                        <button
+                          className="project-modal-jump-btn"
+                          onClick={() => handleSelectProjectFromModal(project.originalIndex)}
+                        >
+                          <span>Go to Slide</span>
+                          <MdArrowForward />
+                        </button>
+                        <a
+                          href={project.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="project-modal-live-btn"
+                        >
+                          <span>Live Demo</span>
+                          <MdArrowOutward />
+                        </a>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="projects-modal-empty">
+                    <p>No projects match "{searchQuery}"</p>
+                    <button onClick={() => setSearchQuery("")}>Reset Search</button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };
