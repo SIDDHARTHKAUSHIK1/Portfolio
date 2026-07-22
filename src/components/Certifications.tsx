@@ -165,8 +165,8 @@ const Certifications = () => {
   };
 
   return (
-    <div className="certifications-section section-container" id="certifications">
-      <div className="certifications-header">
+    <div className="certifications-section" id="certifications">
+      <div className="certifications-header section-container">
         <h2>
           My <span>Certifications</span>
         </h2>

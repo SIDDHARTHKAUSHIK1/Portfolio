@@ -16,7 +16,6 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 60px;
-  padding: 0 10vw;
 }
 
 .certifications-section h2 {
@@ -78,10 +77,11 @@
   padding: 40px 0;
   position: relative;
   left: 50%;
-  transform: translateX(-50%);
-  margin-left: calc(-50vw + 50%);
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none;  /* IE/Edge */
+  -ms-overflow-style: none; /* IE/Edge */
   scroll-behavior: smooth;
 }
 
@@ -95,7 +95,7 @@
   width: max-content;
   justify-content: flex-start;
   align-items: flex-start;
-  padding: 0 10vw;
+  padding: 0;
 }
 
 .cert-card {
@@ -179,14 +179,13 @@
 
 @media only screen and (max-width: 900px) {
   .certifications-header {
-    padding: 0 5vw;
     margin-bottom: 40px;
   }
   .certifications-section h2 {
     font-size: 50px;
   }
   .certifications-track {
-    padding: 0 5vw;
+    padding: 0;
     gap: 30px;
   }
   .control-btn {
