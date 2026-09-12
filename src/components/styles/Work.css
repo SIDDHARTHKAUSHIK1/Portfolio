@@ -1,6 +1,6 @@
 .work-section h2 {
-  margin-top: 100px;
-  font-size: 70px;
+  margin-top: calc(var(--safeAreaTop, 0px) + 60px);
+  font-size: clamp(35px, 5vw, 70px);
   font-weight: 500;
   margin-bottom: 0;
 }
@@ -77,7 +77,7 @@
 .work-scroll-nav {
   position: absolute;
   left: 50%;
-  bottom: 20px;
+  bottom: calc(var(--safeAreaBottom, 0px) + 20px);
   transform: translateX(-50%);
   width: min(720px, calc(100% - 30px));
   z-index: 10;

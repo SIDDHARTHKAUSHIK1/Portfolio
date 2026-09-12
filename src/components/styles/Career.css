@@ -8,13 +8,15 @@
   opacity: 1;
   height: auto;
   margin: auto;
-  margin-bottom: 250px;
-  padding: 120px 0px;
+  margin-bottom: 100px;
+  padding: calc(var(--safeAreaTop, 0px) + 80px) 0px calc(var(--safeAreaBottom, 0px) + 60px) 0px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .career-section h2 {
-  font-size: 70px;
-  line-height: 70px;
+  font-size: clamp(36px, 6vw, 70px);
+  line-height: 1.1;
   font-weight: 400;
   text-align: center;
   background: linear-gradient(0deg, #7f40ff, #ffffff);
@@ -22,8 +24,8 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
-  margin-top: 50px;
-  margin-bottom: 90px;
+  margin-top: 20px;
+  margin-bottom: 60px;
 }
 .career-section h2 > span {
   font-family: "Geist", sans-serif;

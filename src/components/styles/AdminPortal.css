@@ -1,16 +1,19 @@
 .admin-portal-container {
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--backgroundColor, #0b080c);
   color: #eae5ec;
   font-family: "Geist", sans-serif;
-  padding: 40px 20px;
+  padding: calc(var(--safeAreaTop, 0px) + 30px) calc(var(--safeAreaRight, 0px) + 20px) calc(var(--safeAreaBottom, 0px) + 40px) calc(var(--safeAreaLeft, 0px) + 20px);
   box-sizing: border-box;
   position: relative;
   z-index: 100;
+  width: 100%;
 }
 
 .admin-portal-wrapper {
   max-width: 1200px;
+  width: 100%;
   margin: 0 auto;
 }
 

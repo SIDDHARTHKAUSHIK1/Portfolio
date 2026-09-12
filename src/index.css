@@ -21,11 +21,29 @@
   --accentColor: #c2a4ff;
   --backgroundColor: #0b080c;
   --vh: 100vh;
-  --vh: 100svh;
+  --vh: 100dvh;
+
+  /* Safe Area Insets for Mobile App Edge-to-Edge & Notch Support */
+  --safeAreaTop: env(safe-area-inset-top, 0px);
+  --safeAreaBottom: env(safe-area-inset-bottom, 0px);
+  --safeAreaLeft: env(safe-area-inset-left, 0px);
+  --safeAreaRight: env(safe-area-inset-right, 0px);
+
+  /* Responsive Top Gap for Mobile Navbar Spacing */
+  --mobileTopGap: calc(var(--safeAreaTop) + 95px);
+
+  --cWidth: calc(100% - 24px);
+  --cMaxWidth: 1400px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 html {
   overflow-x: hidden;
+  max-width: 100vw;
+  width: 100%;
 }
 h1,
 h2,
@@ -36,43 +54,24 @@ h6 {
   font-family: "Geist", sans-serif;
 }
 body {
-  overflow: hidden;
-}
-a {
-  color: inherit;
-  text-decoration: inherit;
-}
-a:hover {
-  color: var(--accentColor);
-}
-main {
-  opacity: 1;
-  transition: 0.3s;
-}
-.main-active {
-  opacity: 0;
-  animation: fadeIn 1s 1;
-  animation-fill-mode: forwards;
-}
-@keyframes fadeIn {
-  100% {
-    opacity: 1;
-  }
-}
-body {
   margin: 0;
+  padding: 0;
   height: auto;
+  min-height: 100vh;
+  min-height: 100dvh;
   background-color: #000;
   flex-grow: 1;
-  --cWidth: calc(100% - 30px);
-  --cMaxWidth: 1920px;
   max-width: 100vw;
+  width: 100%;
   overflow: hidden;
   overflow-x: hidden;
   overflow-y: auto;
+  padding-left: var(--safeAreaLeft);
+  padding-right: var(--safeAreaRight);
 }
 .main-body {
   max-width: 100vw;
+  width: 100%;
   overflow-x: hidden;
 }
 
@@ -111,19 +110,28 @@ body {
   text-align: center;
   position: absolute;
   width: 100%;
-  top: 120px;
+  top: calc(var(--safeAreaTop) + 100px);
   left: 0;
   font-weight: 400;
   text-transform: uppercase;
 }
 
 @media screen and (min-width: 768px) {
-  body {
+  :root {
+    --cWidth: 92%;
+    --mobileTopGap: calc(var(--safeAreaTop) + 85px);
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  :root {
     --cWidth: 94%;
   }
 }
+
 @media screen and (max-width: 900px) {
   .techstack h2 {
     font-size: 40px;
+    top: calc(var(--safeAreaTop) + 80px);
   }
 }

@@ -160,8 +160,12 @@
 .landing-intro {
   position: absolute;
   z-index: 9;
-  top: 12%;
+  top: var(--mobileTopGap, calc(env(safe-area-inset-top, 0px) + 95px));
   left: 0;
+  width: 100%;
+  padding-left: calc(var(--safeAreaLeft, 0px) + 10px);
+  padding-right: calc(var(--safeAreaRight, 0px) + 10px);
+  box-sizing: border-box;
 }
 .landing-intro h2 {
   margin: 0;
@@ -180,17 +184,16 @@
   font-family: "Geist", sans-serif;
 }
 
-/* .landing-intro h1 span {
-   font-weight: 200; 
-} */
-
 .landing-info {
   position: absolute;
   right: 50%;
   transform: translateX(50%);
-  bottom: 40px;
+  bottom: calc(var(--safeAreaBottom, 0px) + 35px);
   top: inherit;
   z-index: 9;
+  width: 90%;
+  max-width: 500px;
+  text-align: center;
 }
 .landing-info h3 {
   font-size: 22px;

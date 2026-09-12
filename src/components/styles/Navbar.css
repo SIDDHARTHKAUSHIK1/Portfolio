@@ -3,7 +3,8 @@
   max-width: var(--cMaxWidth);
   width: var(--cWidth);
   justify-content: space-between;
-  padding: 20px 0px;
+  align-items: center;
+  padding: calc(var(--safeAreaTop, 0px) + 16px) 0px 16px 0px;
   margin-bottom: -100px;
   box-sizing: border-box;
   position: fixed;
@@ -15,13 +16,13 @@
 .header ul {
   font-size: 12px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   margin: 0;
   padding: 0;
   list-style: none;
-  column-gap: 40px;
+  column-gap: 20px;
   row-gap: 8px;
-  align-items: end;
+  align-items: center;
 }
 .header ul li {
   margin-left: 0px;
@@ -47,11 +48,10 @@
 }
 @media only screen and (min-width: 500px) {
   .header {
-    padding: 20px 0px;
+    padding: calc(var(--safeAreaTop, 0px) + 20px) 0px 20px 0px;
   }
   .header ul {
-    flex-direction: row;
-    align-items: center;
+    column-gap: 40px;
     font-size: 14px;
   }
   .header ul li {
@@ -68,7 +68,7 @@
 }
 @media only screen and (min-width: 1200px) {
   .header {
-    padding: 35px 0px;
+    padding: calc(var(--safeAreaTop, 0px) + 30px) 0px 25px 0px;
   }
   .header ul {
     column-gap: 80px;
