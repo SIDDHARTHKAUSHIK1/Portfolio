@@ -3,9 +3,7 @@
   max-width: var(--cMaxWidth);
   margin: 0 auto;
   box-sizing: border-box;
-  position: relative;
 }
-
 .title,
 .para {
   font-kerning: none;
@@ -14,16 +12,21 @@
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
 }
-
 @media only screen and (max-width: 1600px) {
   .section-container {
-    max-width: 1300px;
+    width: var(--cWidth);
+    max-width: 1200px;
   }
 }
-
-@media only screen and (max-width: 1200px) {
+@media only screen and (max-width: 1400px) {
   .section-container {
+    width: var(--cWidth);
+    max-width: 1000px;
+  }
+}
+@media only screen and (max-width: 900px) {
+  .section-container {
+    width: var(--cWidth);
     max-width: 100%;
   }
 }
-

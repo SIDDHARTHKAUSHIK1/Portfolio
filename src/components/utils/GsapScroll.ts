@@ -68,7 +68,8 @@ export function setCharTimeline(
         .to(camera.position, { z: 22 }, 0)
         .fromTo(".character-model", { x: 0 }, { x: "-25%", duration: 1 }, 0)
         .to(".landing-container", { opacity: 0, duration: 0.4 }, 0)
-        .fromTo(".about-me", { y: "40px", opacity: 0 }, { y: "0px", opacity: 1, duration: 0.8 }, 0);
+        .to(".landing-container", { y: "40%", duration: 0.8 }, 0)
+        .fromTo(".about-me", { y: "-50%" }, { y: "0%" }, 0);
 
       tl2
         .to(
@@ -148,6 +149,7 @@ export function setAllTimeline() {
       { maxHeight: "100%", duration: 0.5 },
       0
     )
+
     .fromTo(
       ".career-timeline",
       { opacity: 0 },

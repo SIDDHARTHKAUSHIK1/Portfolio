@@ -30,13 +30,10 @@
   --safeAreaRight: env(safe-area-inset-right, 0px);
 
   /* Responsive Top Gap for Mobile Navbar Spacing */
-  --mobileTopGap: calc(var(--safeAreaTop) + 80px);
+  --mobileTopGap: calc(var(--safeAreaTop) + 95px);
 
-  /* Standard Auto-Aligned Container Widths */
-  --cWidth: calc(100% - 32px);
+  --cWidth: calc(100% - 24px);
   --cMaxWidth: 1400px;
-  --sectionPaddingY: clamp(40px, 6vw, 80px);
-  --sectionGap: clamp(30px, 5vw, 60px);
 }
 
 *, *::before, *::after {
@@ -48,7 +45,6 @@ html {
   max-width: 100vw;
   width: 100%;
 }
-
 h1,
 h2,
 h3,
@@ -56,9 +52,7 @@ h4,
 h5,
 h6 {
   font-family: "Geist", sans-serif;
-  margin-top: 0;
 }
-
 body {
   margin: 0;
   padding: 0;
@@ -69,12 +63,12 @@ body {
   flex-grow: 1;
   max-width: 100vw;
   width: 100%;
+  overflow: hidden;
   overflow-x: hidden;
   overflow-y: auto;
   padding-left: var(--safeAreaLeft);
   padding-right: var(--safeAreaRight);
 }
-
 .main-body {
   max-width: 100vw;
   width: 100%;
@@ -83,24 +77,18 @@ body {
 
 .container-main {
   width: 100%;
-  margin: 0 auto;
+  margin: auto;
   position: relative;
-  display: flex;
-  flex-direction: column;
 }
-
 .container1 {
   width: var(--cWidth);
-  max-width: var(--cMaxWidth);
-  min-height: var(--vh);
-  margin: 0 auto;
+  height: var(--vh);
+  margin: auto;
   position: relative;
 }
-
 .split-line {
   overflow: hidden;
 }
-
 .split-h2 {
   overflow: hidden;
   display: flex;
@@ -118,7 +106,7 @@ body {
 }
 
 .techstack h2 {
-  font-size: clamp(32px, 5vw, 80px);
+  font-size: 80px;
   text-align: center;
   position: absolute;
   width: 100%;
@@ -128,12 +116,6 @@ body {
   text-transform: uppercase;
 }
 
-@media screen and (min-width: 480px) {
-  :root {
-    --cWidth: calc(100% - 40px);
-  }
-}
-
 @media screen and (min-width: 768px) {
   :root {
     --cWidth: 92%;
@@ -141,21 +123,15 @@ body {
   }
 }
 
-@media screen and (min-width: 1025px) {
+@media screen and (min-width: 1200px) {
   :root {
-    --cWidth: 90%;
-  }
-}
-
-@media screen and (min-width: 1400px) {
-  :root {
-    --cWidth: 88%;
+    --cWidth: 94%;
   }
 }
 
 @media screen and (max-width: 900px) {
   .techstack h2 {
-    font-size: clamp(28px, 6vw, 42px);
-    top: calc(var(--safeAreaTop) + 40px);
+    font-size: 40px;
+    top: calc(var(--safeAreaTop) + 80px);
   }
 }

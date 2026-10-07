@@ -13,13 +13,11 @@
   padding: calc(var(--safeAreaTop, 0px) + 40px) 0px;
   box-sizing: border-box;
 }
-
 .about-me {
   padding: 30px 0px;
   width: 100%;
   max-width: 650px;
 }
-
 .about-me h3 {
   font-size: clamp(16px, 4vw, 25px);
   text-transform: uppercase;
@@ -41,7 +39,6 @@
     justify-content: center;
   }
 }
-
 @media only screen and (min-width: 768px) {
   .about-me {
     max-width: 650px;
@@ -51,7 +48,6 @@
     opacity: 1;
   }
 }
-
 @media only screen and (min-width: 1025px) {
   .about-section {
     width: var(--cWidth);
@@ -70,7 +66,6 @@
     line-height: 1.3;
   }
 }
-
 @media only screen and (min-width: 1950px) {
   .about-me p {
     font-size: 2.5rem;

@@ -27,25 +27,21 @@
   margin-top: 20px;
   margin-bottom: 60px;
 }
-
 .career-section h2 > span {
   font-family: "Geist", sans-serif;
   font-weight: 300;
 }
-
 .career-info {
   position: relative;
   display: flex;
   flex-direction: column;
   margin: 0px auto;
 }
-
 .career-info-box {
   display: flex;
   justify-content: space-between;
   margin-bottom: 50px;
 }
-
 .career-info-box p,
 .career-details {
   width: 40%;
@@ -53,7 +49,6 @@
   font-weight: 300;
   margin: 0;
 }
-
 .career-details h5 {
   font-size: 19px;
   font-weight: 500;
@@ -62,36 +57,30 @@
   margin-bottom: 12px;
   text-transform: none !important;
 }
-
 .career-details ul {
   padding-left: 20px;
   margin: 0;
   list-style-type: disc;
 }
-
 .career-details li {
   margin-bottom: 8px;
   line-height: 1.5;
   color: #cccccc;
 }
-
 .career-external-link {
   color: var(--accentColor);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-
 .career-external-link:hover {
   opacity: 0.85;
 }
-
 .career-info-in {
   display: flex;
   width: 40%;
   justify-content: space-between;
   gap: 50px;
 }
-
 .career-info h3 {
   font-size: 48px;
   margin: 0;
@@ -106,7 +95,6 @@
   font-weight: 500;
   margin: 0;
 }
-
 .career-info h5 {
   font-weight: 400;
   letter-spacing: 0.7px;
@@ -115,7 +103,6 @@
   margin: 10px 0px;
   color: var(--accentColor);
 }
-
 .career-timeline {
   position: absolute;
   top: -50px;
@@ -131,7 +118,6 @@
   );
   max-height: 0%;
 }
-
 .career-dot {
   position: absolute;
   bottom: 0;
@@ -164,7 +150,15 @@
       0px 0px 110px 20px #f2c0ff;
   }
 }
-
+@keyframes timeline2 {
+  0% {
+    box-shadow: 0px 0px 5px 2px #d29bff;
+  }
+  100% {
+    box-shadow: 0px 0px 5px 2px #d29bff, 0px 0px 15px 5px #d097ff,
+      0px 0px 110px 20px #f2c0ff;
+  }
+}
 @media only screen and (max-width: 1400px) {
   .career-section h2 {
     font-size: 50px;
@@ -198,7 +192,6 @@
     width: 45%;
   }
 }
-
 @media only screen and (max-width: 1025px) {
   .career-section {
     padding: 70px 0px;
@@ -207,7 +200,6 @@
     margin-bottom: 0;
   }
 }
-
 @media only screen and (max-width: 900px) {
   .career-info-box {
     flex-direction: column;
@@ -228,7 +220,6 @@
     width: calc(100% - 25px);
   }
 }
-
 @media only screen and (max-width: 600px) {
   .career-info {
     margin: 0;
