@@ -23,21 +23,50 @@ const Navbar = () => {
     smoother.scrollTop(0);
     smoother.paused(true);
 
-    let links = document.querySelectorAll(".header ul a");
-    links.forEach((elem) => {
-      let element = elem as HTMLAnchorElement;
-      element.addEventListener("click", (e) => {
-        if (window.innerWidth > 1024) {
-          e.preventDefault();
-          let elem = e.currentTarget as HTMLAnchorElement;
-          let section = elem.getAttribute("data-href");
-          smoother.scrollTo(section, true, "top top");
+    const handleLinkClick = (e: Event) => {
+      const elem = e.currentTarget as HTMLAnchorElement;
+      const section = elem.getAttribute("data-href") || elem.getAttribute("href");
+
+      if (!section || section === "/#" || section === "#") {
+        e.preventDefault();
+        if (smoother) {
+          smoother.scrollTo(0, true);
+        } else {
+          window.scrollTo({ top: 0, behavior: "smooth" });
         }
-      });
+        return;
+      }
+
+      if (section.startsWith("#")) {
+        e.preventDefault();
+        ScrollTrigger.refresh();
+        if (smoother) {
+          smoother.scrollTo(section, true, "top top");
+        } else {
+          const target = document.querySelector(section);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth" });
+          }
+        }
+      }
+    };
+
+    const links = document.querySelectorAll(".header ul a, .navbar-title");
+    links.forEach((elem) => {
+      elem.addEventListener("click", handleLinkClick);
     });
-    window.addEventListener("resize", () => {
+
+    const resizeHandler = () => {
       ScrollSmoother.refresh(true);
-    });
+    };
+    window.addEventListener("resize", resizeHandler);
+
+    return () => {
+      links.forEach((elem) => {
+        elem.removeEventListener("click", handleLinkClick);
+      });
+      window.removeEventListener("resize", resizeHandler);
+    };
   }, []);
   return (
     <>

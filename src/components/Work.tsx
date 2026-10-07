@@ -3,10 +3,11 @@ import WorkImage from "./WorkImage";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { useGSAP } from "@gsap/react";
 import { useCallback, useRef, useState } from "react";
 
-gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin);
+gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin, ScrollSmoother);
 
 const PROJECTS = [
   {
@@ -63,16 +64,20 @@ const Work = () => {
 
     function setTranslateX() {
       const box = document.getElementsByClassName("work-box");
-      if (!box.length) return;
-      const rectLeft = document
-        .querySelector(".work-container")!
-        .getBoundingClientRect().left;
+      if (!box.length) return 0;
+      const container = document.querySelector(".work-container");
+      const rectLeft = container
+        ? container.getBoundingClientRect().left
+        : 0;
       const rect = box[0].getBoundingClientRect();
-      const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
+      const parentWidth = box[0].parentElement
+        ? box[0].parentElement.getBoundingClientRect().width
+        : window.innerWidth;
       const padding =
-        parseInt(window.getComputedStyle(box[0]).padding, 10) / 2;
+        parseInt(window.getComputedStyle(box[0]).padding, 10) / 2 || 0;
       translateX =
         rect.width * box.length - (rectLeft + parentWidth) + padding;
+      return translateX;
     }
 
     setTranslateX();
@@ -84,10 +89,11 @@ const Work = () => {
       scrollTrigger: {
         trigger: ".work-section",
         start: "top top",
-        end: `+=${translateX}`,
+        end: () => `+=${setTranslateX()}`,
         scrub: true,
         pin: true,
         id: "work",
+        invalidateOnRefresh: true,
         onUpdate: (self) => {
           sectionEl?.style.setProperty(
             "--work-scroll-progress",
@@ -100,7 +106,7 @@ const Work = () => {
     });
 
     timeline.to(".work-flex", {
-      x: -translateX,
+      x: () => -translateX,
       ease: "none",
     });
 
@@ -118,11 +124,16 @@ const Work = () => {
     const rect = track.getBoundingClientRect();
     const p = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
     const targetScroll = st.start + (st.end - st.start) * p;
-    gsap.to(window, {
-      duration: 0.3,
-      scrollTo: { y: targetScroll, autoKill: false },
-      ease: "power2.out"
-    });
+    const sm = ScrollSmoother.get();
+    if (sm) {
+      sm.scrollTo(targetScroll, true);
+    } else {
+      gsap.to(window, {
+        duration: 0.3,
+        scrollTo: { y: targetScroll, autoKill: false },
+        ease: "power2.out"
+      });
+    }
   }, []);
 
   const onTrackPointerDown = useCallback(
@@ -153,13 +164,17 @@ const Work = () => {
     const p =
       PROJECTS.length <= 1 ? 0 : index / (PROJECTS.length - 1);
     
-    // Use GSAP's scrollTo plugin for smooth navigation
     const targetScroll = st.start + (st.end - st.start) * p;
-    gsap.to(window, {
-      duration: 1,
-      scrollTo: { y: targetScroll, autoKill: false },
-      ease: "power2.inOut"
-    });
+    const sm = ScrollSmoother.get();
+    if (sm) {
+      sm.scrollTo(targetScroll, true);
+    } else {
+      gsap.to(window, {
+        duration: 1,
+        scrollTo: { y: targetScroll, autoKill: false },
+        ease: "power2.inOut"
+      });
+    }
   }, []);
 
   const handleNext = useCallback(() => {
