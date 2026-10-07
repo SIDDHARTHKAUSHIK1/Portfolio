@@ -76,6 +76,7 @@ export function setCharTimeline(
           { z: 75, y: 8.4, duration: 6, delay: 2, ease: "power3.inOut" },
           0
         )
+        .to(".about-section", { y: "30%", duration: 6 }, 0)
         .to(".about-section", { opacity: 0, delay: 3, duration: 2 }, 0)
         .fromTo(
           ".character-model",
@@ -113,6 +114,7 @@ export function setCharTimeline(
           { y: "-100%", duration: 4, ease: "none", delay: 1 },
           0
         )
+        .fromTo(".whatIDO", { y: 0 }, { y: "15%", duration: 2 }, 0)
         .to(character.rotation, { x: -0.04, duration: 2, delay: 1 }, 0);
     }
   } else {
@@ -133,8 +135,8 @@ export function setAllTimeline() {
   const careerTimeline = gsap.timeline({
     scrollTrigger: {
       trigger: ".career-section",
-      start: "top 60%",
-      end: "bottom center",
+      start: "top 30%",
+      end: "100% center",
       scrub: true,
       invalidateOnRefresh: true,
     },
@@ -142,7 +144,7 @@ export function setAllTimeline() {
   careerTimeline
     .fromTo(
       ".career-timeline",
-      { maxHeight: "0%" },
+      { maxHeight: "10%" },
       { maxHeight: "100%", duration: 0.5 },
       0
     )
@@ -154,8 +156,8 @@ export function setAllTimeline() {
     )
     .fromTo(
       ".career-info-box",
-      { opacity: 0, y: 30 },
-      { opacity: 1, y: 0, stagger: 0.1, duration: 0.5 },
+      { opacity: 0 },
+      { opacity: 1, stagger: 0.1, duration: 0.5 },
       0
     )
     .fromTo(
@@ -168,4 +170,20 @@ export function setAllTimeline() {
       },
       0
     );
+
+  if (window.innerWidth > 1024) {
+    careerTimeline.fromTo(
+      ".career-section",
+      { y: 0 },
+      { y: "20%", duration: 0.5, delay: 0.2 },
+      0
+    );
+  } else {
+    careerTimeline.fromTo(
+      ".career-section",
+      { y: 0 },
+      { y: 0, duration: 0.5, delay: 0.2 },
+      0
+    );
+  }
 }
