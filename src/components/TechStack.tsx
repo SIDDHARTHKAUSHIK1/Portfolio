@@ -10,6 +10,7 @@ import {
   CylinderCollider,
   RapierRigidBody,
 } from "@react-three/rapier";
+import "./styles/TechStack.css";
 
 const textureLoader = new THREE.TextureLoader();
 const imageUrls = [
@@ -124,17 +125,46 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
   );
 }
 
+const SKILL_CATEGORIES = [
+  {
+    category: "Languages & Core",
+    skills: ["Python", "TypeScript", "JavaScript", "C/C++", "HTML5", "CSS3", "SQL"],
+  },
+  {
+    category: "Frontend & UI",
+    skills: ["React.js", "Next.js", "Tailwind CSS", "Radix UI", "Three.js", "GSAP", "Zustand"],
+  },
+  {
+    category: "Backend & Systems",
+    skills: ["FastAPI", "Node.js", "Express.js", "PostgreSQL", "MongoDB", "REST APIs", "Electron"],
+  },
+  {
+    category: "AI, ML & Tools",
+    skills: ["PyTorch", "TensorFlow", "LangChain", "RAG & Ollama", "FAISS", "OpenCV", "Docker", "Git/GitHub", "Vercel"],
+  },
+];
+
 const TechStack = () => {
   const [isActive, setIsActive] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth > 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
+      const workEl = document.getElementById("work");
+      if (!workEl) return;
+      const threshold = workEl.getBoundingClientRect().top;
       setIsActive(scrollY > threshold);
     };
+
     document.querySelectorAll(".header a").forEach((elem) => {
       const element = elem as HTMLAnchorElement;
       element.addEventListener("click", () => {
@@ -146,11 +176,13 @@ const TechStack = () => {
         }, 1000);
       });
     });
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
   const materials = useMemo(() => {
     return textures.map(
       (texture) =>
@@ -166,9 +198,35 @@ const TechStack = () => {
     );
   }, []);
 
+  if (!isDesktop) {
+    return (
+      <div className="techstack-mobile-view">
+        <h2 className="techstack-mobile-title">
+          My Tech Stack <span>& Skills</span>
+        </h2>
+        <div className="techstack-grid">
+          {SKILL_CATEGORIES.map((group) => (
+            <div className="techstack-cat-card" key={group.category}>
+              <h4>{group.category}</h4>
+              <div className="techstack-chips">
+                {group.skills.map((skill) => (
+                  <span className="techstack-chip" key={skill}>
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="techstack">
-      <h2> My Tech Stack & Skills</h2>
+      <h2 className="techstack-header-title">
+        My Tech Stack <span>& Skills</span>
+      </h2>
 
       <Canvas
         shadows
