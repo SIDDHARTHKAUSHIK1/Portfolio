@@ -98,8 +98,7 @@
   opacity: 0;
 }
 .character-model {
-  height: 80%;
-  height: 80vh;
+  height: 55vh;
   position: absolute;
   max-width: 1920px;
   max-height: 1080px;
@@ -107,8 +106,8 @@
   left: 0;
   right: 0;
   margin: 0 auto;
-  z-index: 0;
-  bottom: 50px;
+  z-index: 1;
+  bottom: 0px;
   pointer-events: inherit;
 }
 .character-model::after {
@@ -159,80 +158,94 @@
 }
 .landing-intro {
   position: absolute;
-  z-index: 9;
-  top: var(--mobileTopGap, calc(env(safe-area-inset-top, 0px) + 95px));
+  z-index: 20;
+  top: calc(var(--safeAreaTop, 0px) + 75px);
   left: 0;
   width: 100%;
-  padding-left: calc(var(--safeAreaLeft, 0px) + 10px);
-  padding-right: calc(var(--safeAreaRight, 0px) + 10px);
+  padding-left: calc(var(--safeAreaLeft, 0px) + 15px);
+  padding-right: calc(var(--safeAreaRight, 0px) + 15px);
   box-sizing: border-box;
+  text-align: center;
 }
 .landing-intro h2 {
   margin: 0;
   color: var(--accentColor);
-  font-size: 22px;
+  font-size: clamp(16px, 4.5vw, 25px);
   font-weight: 300;
   letter-spacing: 2px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 
 .landing-intro h1 {
   margin: 0;
   letter-spacing: 2px;
-  font-size: 28px;
-  line-height: 28px;
+  font-size: clamp(26px, 7vw, 60px);
+  line-height: 1.15;
   font-weight: 500;
   font-family: "Geist", sans-serif;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.9);
 }
 
 .landing-info {
   position: absolute;
-  right: 50%;
-  transform: translateX(50%);
-  bottom: calc(var(--safeAreaBottom, 0px) + 35px);
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--safeAreaBottom, 0px) + 20px);
   top: inherit;
-  z-index: 9;
-  width: 90%;
-  max-width: 500px;
+  z-index: 20;
+  width: 100%;
+  max-width: 600px;
   text-align: center;
+  padding: 0 15px;
+  box-sizing: border-box;
 }
 .landing-info h3 {
-  font-size: 22px;
+  font-size: clamp(16px, 4vw, 25px);
   letter-spacing: 2px;
   font-weight: 300;
   color: var(--accentColor);
-  margin: 0;
+  margin: 0 0 4px 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.9);
 }
 .landing-info h2 {
   margin: 0;
-  margin-top: -20px;
-  margin-left: 20px;
   font-family: "Geist", sans-serif;
   font-weight: 600;
-  font-size: 32px;
-  line-height: 40px;
+  font-size: clamp(24px, 6.5vw, 45px);
+  line-height: 1.2;
   position: relative;
   display: flex;
-  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
   text-transform: uppercase;
   letter-spacing: 2px;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
 }
 .landing-h2-info-1 {
   position: absolute;
   top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
 }
 h2.landing-info-h2 {
   color: #c481ff;
-  font-size: 42px;
-  width: 120%;
-  margin: 0;
+  font-size: clamp(26px, 7vw, 55px);
+  width: 100%;
+  margin: 0 auto;
   font-family: "Geist", sans-serif;
   font-weight: 600;
   position: relative;
-  margin-left: -5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .landing-h2-2 {
   position: absolute;
   top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
 }
 .landing-info-h2::after {
   content: "";
@@ -247,52 +260,16 @@ h2.landing-info-h2 {
   );
   top: 0;
   left: 0;
+  pointer-events: none;
 }
 @media screen and (min-width: 500px) {
   .landing-circle2 {
     display: block;
   }
-  .character-model {
-    z-index: 0;
-  }
-  .landing-info h3 {
-    font-size: 18px;
-  }
-  .landing-intro h2 {
-    font-size: 18px;
-  }
-  .landing-intro h1 {
-    font-size: 30px;
-    line-height: 30px;
-  }
-  .landing-info h2 {
-    font-size: 35px;
-    line-height: 40px;
-  }
-  h2.landing-info-h2 {
-    font-size: 38px;
-  }
 }
 @media screen and (min-width: 768px) {
   .character-model {
-    height: 80vh;
-  }
-  .landing-intro h2 {
-    font-size: 25px;
-  }
-  .landing-intro h1 {
-    font-size: 40px;
-    line-height: 35px;
-  }
-  .landing-info h3 {
-    font-size: 25px;
-  }
-  .landing-info h2 {
-    font-size: 45px;
-    line-height: 42px;
-  }
-  h2.landing-info-h2 {
-    font-size: 55px;
+    height: 70vh;
   }
 }
 @media screen and (min-width: 1025px) {
@@ -311,6 +288,9 @@ h2.landing-info-h2 {
     left: auto;
     right: 66%;
     transform: translate(0%, -50%);
+    width: auto;
+    text-align: left;
+    padding: 0;
   }
 
   .landing-info {
@@ -321,6 +301,8 @@ h2.landing-info-h2 {
     transform: translate(0%, -50%);
     right: auto;
     left: 66%;
+    width: auto;
+    padding: 0;
   }
 }
 @media screen and (min-width: 1200px) {
